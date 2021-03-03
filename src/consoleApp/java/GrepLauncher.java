@@ -12,20 +12,20 @@ import java.util.regex.Pattern;
 
 public final class GrepLauncher {
 
-    @Option(name = "[-v]")
+    @Option(name = "-v")
     private String v;
 
-    @Option(name = "[-r]")
-    private  String r;
+    @Option(name = "-r")
+    private String r;
 
-    @Option(name = "[-i]")
-    private  String i;
-
-    @Argument(required = true)
-    private  String fileName;
+    @Option(name = "-i")
+    private String i;
 
     @Argument(required = true)
-    private  Pattern pattern;
+    private String fileName;
+
+    @Argument(required = true)
+    private Pattern pattern;
 
     private final static String defaultPath = "./test/consoleApp/resources/";
     //private final static File file;
