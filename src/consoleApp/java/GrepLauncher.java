@@ -1,37 +1,44 @@
 package consoleApp.java;
-//зашерить преокт на гитзаб (VCS)
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class GrepLauncher {
 
     @Option(name = "-v")
-    private String v;
+    private Boolean v;
 
     @Option(name = "-r")
-    private String r;
+    private Boolean r;
 
     @Option(name = "-i")
-    private String i;
-
-    @Argument(required = true)
-    private String fileName;
+    private Boolean i;
 
     @Argument(required = true)
     private Pattern pattern;
 
+    @Argument(required = true, index = 1)
+    private String fileName;
+
     private final static String defaultPath = "./test/consoleApp/resources/";
-    //private final static File file;
 
     public static void main(String[] args) {
-        CmdLineParser parser = new CmdLineParser(args);
+        new GrepLauncher().launch(args);
+    }
+    public void launch(String[] args) {
+        CmdLineParser parser = new CmdLineParser(this);
+
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
@@ -39,6 +46,16 @@ public final class GrepLauncher {
             return;
         }
 
+        List<String> lines = null;
+        try {
+            lines = Files.readAllLines(Paths.get(defaultPath + fileName), UTF_8);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
+        for(String line : lines) {
+            System.out.println(line);
+        }
 
     }
 }
