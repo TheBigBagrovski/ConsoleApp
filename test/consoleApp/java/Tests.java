@@ -121,4 +121,43 @@ public class Tests {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void stringOrPatternTest() { //grep [aob] stringOrPatternTest.txt
+        grep = new Grep(false, false, false, "[aob]", "stringOrPatternTest.txt");
+        List<String> actual = grep.textFilter(grep);
+        List<String> expected = Arrays.asList("[aob]", "[aob] 23");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void i_stringOrPatternTest() { //grep -i [aob] stringOrPatternTest.txt
+        grep = new Grep(false, true, false, "[aob]", "stringOrPatternTest.txt");
+        List<String> actual = grep.textFilter(grep);
+        List<String> expected = Arrays.asList("[aob]", "[aob] 23", "[AOB]");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void r_stringOrPatternTest() { //grep -r [aob] stringOrPatternTest.txt
+        grep = new Grep(false, false, true, "[aob]", "stringOrPatternTest.txt");
+        List<String> actual = grep.textFilter(grep);
+        List<String> expected = Arrays.asList("[aob]", "aboobaboabaobao", "[aob] 23");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void ir_stringOrPatternTest() { //grep -i -r [aob] stringOrPatternTest.txt
+        grep = new Grep(false, true, true, "[aob]", "stringOrPatternTest.txt");
+        List<String> actual = grep.textFilter(grep);
+        List<String> expected = Arrays.asList("[aob]", "aboobaboabaobao", "[aob] 23", "[AOB]");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void vir_stringOrPatternTest() { //grep -v -i -r [aob] stringOrPatternTest.txt
+        grep = new Grep(true, true, true, "[aob]", "stringOrPatternTest.txt");
+        List<String> actual = grep.textFilter(grep);
+        List<String> expected = Collections.singletonList("rtrtrtrtrttr");
+        assertEquals(expected, actual);
+    }
 }

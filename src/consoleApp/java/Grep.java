@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 public class Grep {
 
+    private final boolean r;
     private final boolean i;
     private final boolean v;
     private final String word;
@@ -21,6 +22,7 @@ public class Grep {
     public Grep(boolean v, boolean i, boolean r, String word, String fileName) {
         this.v = v;
         this.i = i;
+        this.r = r;
         this.word = word;
         this.fileName = fileName;
     }
@@ -30,8 +32,8 @@ public class Grep {
         List<String> lines = new ArrayList<>();
         List<String> answer = new ArrayList<>();
         Pattern pattern = Pattern.compile(word);
-        if (i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
         Matcher matcher;
+        if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
 
         try {
             lines = Files.readAllLines(Paths.get(defaultPath + grep.fileName), StandardCharsets.UTF_8);
@@ -40,15 +42,30 @@ public class Grep {
         }
         if (lines.isEmpty()) throw new IllegalStateException("File is empty");
 
-        for (String line : lines) {
-            if (line.isEmpty()) continue;
-            matcher = pattern.matcher(line);
-            if (v) {
-                if (!matcher.find()) answer.add(line);
-            } else {
-                if (matcher.find()) answer.add(line);
+        if (r)
+            for (String line : lines) {
+                if (line.isEmpty()) continue;
+                matcher = pattern.matcher(line);
+                if (v) {
+                    if (!matcher.find()) answer.add(line);
+                } else {
+                    if (matcher.find()) answer.add(line);
+                }
             }
-        }
+        else
+            for (String line : lines) {
+                if (line.isEmpty()) continue;
+                boolean caseIgnoreContains = line.toLowerCase().contains(word.toLowerCase());
+                if (v && i) {
+                    if (!caseIgnoreContains) answer.add(line);
+                } else if (v) {
+                    if (!line.contains(word)) answer.add(line);
+                } else if (i) {
+                    if (caseIgnoreContains) answer.add(line);
+                } else {
+                    if (line.contains(word)) answer.add(line);
+                }
+            }
 
         return answer;
     }
