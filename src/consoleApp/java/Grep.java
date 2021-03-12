@@ -36,6 +36,7 @@ public class Grep {
             FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(fr);
             String line = reader.readLine();
+            byte[] space = "\n".getBytes(StandardCharsets.UTF_8);
             if (r) {
                 while (line != null) {
                     if (line.isEmpty()) {
@@ -45,9 +46,15 @@ public class Grep {
                     byte[] buf = line.getBytes(StandardCharsets.UTF_8);
                     matcher = pattern.matcher(line);
                     if (v) {
-                        if (!matcher.find()) outputStream.write(buf);
+                        if (!matcher.find()) {
+                            outputStream.write(buf);
+                            outputStream.write(space);
+                        }
                     } else {
-                        if (matcher.find()) outputStream.write(buf);
+                        if (matcher.find()) {
+                            outputStream.write(buf);
+                            outputStream.write(space);
+                        }
                     }
                     line = reader.readLine();
                 }
@@ -60,13 +67,25 @@ public class Grep {
                     boolean caseIgnoreContains = line.toLowerCase().contains(word.toLowerCase());
                     byte[] buf = line.getBytes(StandardCharsets.UTF_8);
                     if (v && i) {
-                        if (!caseIgnoreContains) outputStream.write(buf);
+                        if (!caseIgnoreContains) {
+                            outputStream.write(buf);
+                            outputStream.write(space);
+                        }
                     } else if (v) {
-                        if (!line.contains(word)) outputStream.write(buf);
+                        if (!line.contains(word)) {
+                            outputStream.write(buf);
+                            outputStream.write(space);
+                        }
                     } else if (i) {
-                        if (caseIgnoreContains) outputStream.write(buf);
+                        if (caseIgnoreContains) {
+                            outputStream.write(buf);
+                            outputStream.write(space);
+                        }
                     } else {
-                        if (line.contains(word)) outputStream.write(buf);
+                        if (line.contains(word)) {
+                            outputStream.write(buf);
+                            outputStream.write(space);
+                        }
                     }
                     line = reader.readLine();
                 }
