@@ -1,11 +1,7 @@
 package consoleApp.java;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,57 +12,67 @@ public class Grep {
     private final boolean v;
     private final String word;
     private final String fileName;
+    private final OutputStream outputStream;
 
     private final static String defaultPath = "./test/consoleApp/resources/";
 
-    public Grep(boolean v, boolean i, boolean r, String word, String fileName) {
+    public Grep(boolean v, boolean i, boolean r, String word, String fileName, OutputStream outputStream) {
         this.v = v;
         this.i = i;
         this.r = r;
         this.word = word;
         this.fileName = fileName;
+        this.outputStream = outputStream;
     }
 
-    public List<String> textFilter(Grep grep) {
+    public void textFilter() {
 
-        List<String> lines = new ArrayList<>();
-        List<String> answer = new ArrayList<>();
-        Pattern pattern = Pattern.compile(word);
+        Pattern pattern = null;
         Matcher matcher;
         if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
-
+        else if (r) pattern = Pattern.compile(word);
+        File file = new File(defaultPath + fileName);
         try {
-            lines = Files.readAllLines(Paths.get(defaultPath + grep.fileName), StandardCharsets.UTF_8);
+            FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(fr);
+            String line = reader.readLine();
+            if (r) {
+                while (line != null) {
+                    if (line.isEmpty()) {
+                        line = reader.readLine();
+                        continue;
+                    }
+                    byte[] buf = line.getBytes(StandardCharsets.UTF_8);
+                    matcher = pattern.matcher(line);
+                    if (v) {
+                        if (!matcher.find()) outputStream.write(buf);
+                    } else {
+                        if (matcher.find()) outputStream.write(buf);
+                    }
+                    line = reader.readLine();
+                }
+            } else {
+                while (line != null) {
+                    if (line.isEmpty()) {
+                        line = reader.readLine();
+                        continue;
+                    }
+                    boolean caseIgnoreContains = line.toLowerCase().contains(word.toLowerCase());
+                    byte[] buf = line.getBytes(StandardCharsets.UTF_8);
+                    if (v && i) {
+                        if (!caseIgnoreContains) outputStream.write(buf);
+                    } else if (v) {
+                        if (!line.contains(word)) outputStream.write(buf);
+                    } else if (i) {
+                        if (caseIgnoreContains) outputStream.write(buf);
+                    } else {
+                        if (line.contains(word)) outputStream.write(buf);
+                    }
+                    line = reader.readLine();
+                }
+            }
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-        if (lines.isEmpty()) throw new IllegalStateException("File is empty");
-
-        if (r)
-            for (String line : lines) {
-                if (line.isEmpty()) continue;
-                matcher = pattern.matcher(line);
-                if (v) {
-                    if (!matcher.find()) answer.add(line);
-                } else {
-                    if (matcher.find()) answer.add(line);
-                }
-            }
-        else
-            for (String line : lines) {
-                if (line.isEmpty()) continue;
-                boolean caseIgnoreContains = line.toLowerCase().contains(word.toLowerCase());
-                if (v && i) {
-                    if (!caseIgnoreContains) answer.add(line);
-                } else if (v) {
-                    if (!line.contains(word)) answer.add(line);
-                } else if (i) {
-                    if (caseIgnoreContains) answer.add(line);
-                } else {
-                    if (line.contains(word)) answer.add(line);
-                }
-            }
-
-        return answer;
     }
 }

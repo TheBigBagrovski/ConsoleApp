@@ -8,19 +8,19 @@ import org.kohsuke.args4j.Option;
 public final class GrepLauncher {
 
     @Option(name = "-v")
-    private static boolean v;
+    private boolean v;
 
     @Option(name = "-r")
-    private static boolean r;
+    private boolean r;
 
     @Option(name = "-i")
-    private static boolean i;
+    private boolean i;
 
     @Argument(required = true)
-    private static String word;
+    private String word;
 
     @Argument(required = true, index = 1)
-    private static String fileName;
+    private String fileName;
 
     public static void main(String[] args) {
         new GrepLauncher().launch(args);
@@ -33,10 +33,8 @@ public final class GrepLauncher {
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
         }
-        Grep grep = new Grep(v, i, r, word, fileName);
-        for (String line : grep.textFilter(grep)) {
-            System.out.println(line);
-        }
+        Grep grep = new Grep(v, i, r, word, fileName, System.out);
+        grep.textFilter();
     }
 
 }
