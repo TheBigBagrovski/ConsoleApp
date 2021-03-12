@@ -14,8 +14,6 @@ public class Grep {
     private final String fileName;
     private final OutputStream outputStream;
 
-    private final static String defaultPath = "./test/consoleApp/resources/";
-
     public Grep(boolean v, boolean i, boolean r, String word, String fileName, OutputStream outputStream) {
         this.v = v;
         this.i = i;
@@ -26,34 +24,35 @@ public class Grep {
     }
 
     public void textFilter() {
-
         Pattern pattern = null;
         Matcher matcher;
         if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
         else if (r) pattern = Pattern.compile(word);
-        File file = new File(defaultPath + fileName);
+        File file = new File("test/consoleApp/resources/", fileName);
+
         try {
             FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(fr);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             String line = reader.readLine();
-            byte[] space = "\n".getBytes(StandardCharsets.UTF_8);
+            String space = "\n";
+
             if (r) {
                 while (line != null) {
                     if (line.isEmpty()) {
                         line = reader.readLine();
                         continue;
                     }
-                    byte[] buf = line.getBytes(StandardCharsets.UTF_8);
                     matcher = pattern.matcher(line);
                     if (v) {
                         if (!matcher.find()) {
-                            outputStream.write(buf);
-                            outputStream.write(space);
+                            outputStreamWriter.write(line);
+                            outputStreamWriter.write(space);
                         }
                     } else {
                         if (matcher.find()) {
-                            outputStream.write(buf);
-                            outputStream.write(space);
+                            outputStreamWriter.write(line);
+                            outputStreamWriter.write(space);
                         }
                     }
                     line = reader.readLine();
@@ -65,33 +64,34 @@ public class Grep {
                         continue;
                     }
                     boolean caseIgnoreContains = line.toLowerCase().contains(word.toLowerCase());
-                    byte[] buf = line.getBytes(StandardCharsets.UTF_8);
                     if (v && i) {
                         if (!caseIgnoreContains) {
-                            outputStream.write(buf);
-                            outputStream.write(space);
+                            outputStreamWriter.write(line);
+                            outputStreamWriter.write(space);
                         }
                     } else if (v) {
                         if (!line.contains(word)) {
-                            outputStream.write(buf);
-                            outputStream.write(space);
+                            outputStreamWriter.write(line);
+                            outputStreamWriter.write(space);
                         }
                     } else if (i) {
                         if (caseIgnoreContains) {
-                            outputStream.write(buf);
-                            outputStream.write(space);
+                            outputStreamWriter.write(line);
+                            outputStreamWriter.write(space);
                         }
                     } else {
                         if (line.contains(word)) {
-                            outputStream.write(buf);
-                            outputStream.write(space);
+                            outputStreamWriter.write(line);
+                            outputStreamWriter.write(space);
                         }
                     }
                     line = reader.readLine();
                 }
             }
+            outputStreamWriter.close();
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
+
     }
 }
