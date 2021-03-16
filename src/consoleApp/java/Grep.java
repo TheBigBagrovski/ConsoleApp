@@ -25,23 +25,23 @@ public class Grep {
         Pattern pattern = null;
         if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
         else if (r) pattern = Pattern.compile(word);
-        File file = new File("./test/consoleApp/resources/", fileName);
+        File file = new File(fileName);
         try {
             FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(fr);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             String line = reader.readLine();
-            boolean firstString = true;
+            boolean firstTime = true;
             while (line != null) {
                 if (r) {
                     if (regexMatches(pattern, line, v)) {
-                        if (!firstString) outputStreamWriter.write("\n");
-                        else firstString = false;
+                        if (!firstTime) outputStreamWriter.write("\n");
+                        else firstTime = false;
                         outputStreamWriter.write(line);
                     }
                 } else if (stringMatches(word, line, v, i)) {
-                    if (!firstString) outputStreamWriter.write("\n");
-                    else firstString = false;
+                    if (!firstTime) outputStreamWriter.write("\n");
+                    else firstTime = false;
                     outputStreamWriter.write(line);
                 }
                 line = reader.readLine();
