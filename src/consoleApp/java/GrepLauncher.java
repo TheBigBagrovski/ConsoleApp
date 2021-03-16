@@ -33,8 +33,7 @@ public final class GrepLauncher {
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
         }
-        Grep grep = new Grep(v, i, r, word, fileName, System.out);
-        grep.textFilter();
+        Grep grep = new Grep(v, i, r, word, fileName);
+        grep.textFilter(System.out);
     }
-
 }
