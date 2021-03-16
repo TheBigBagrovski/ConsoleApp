@@ -31,15 +31,20 @@ public class Grep {
             BufferedReader reader = new BufferedReader(fr);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             String line = reader.readLine();
-            if (r) while (line != null) {
-                if (regexMatches(pattern, line, v)) output(outputStreamWriter, line);
-                line = reader.readLine();
-            }
-            else {
-                while (line != null) {
-                    if (stringMatches(word, line, v, i)) output(outputStreamWriter, line);
-                    line = reader.readLine();
+            boolean firstString = true;
+            while (line != null) {
+                if (r) {
+                    if (regexMatches(pattern, line, v)) {
+                        if (!firstString) outputStreamWriter.write("\n");
+                        else firstString = false;
+                        outputStreamWriter.write(line);
+                    }
+                } else if (stringMatches(word, line, v, i)) {
+                    if (!firstString) outputStreamWriter.write("\n");
+                    else firstString = false;
+                    outputStreamWriter.write(line);
                 }
+                line = reader.readLine();
             }
             outputStreamWriter.close();
         } catch (IOException e) {
@@ -47,15 +52,11 @@ public class Grep {
         }
     }
 
-    private void output(OutputStreamWriter outputStreamWriter, String line) throws IOException {
-        outputStreamWriter.write(line);
-        outputStreamWriter.write("\n");
-    }
-
     private boolean regexMatches(Pattern pattern, String line, boolean v) {
         Matcher matcher = pattern.matcher(line);
-        if (v) return !matcher.find();
-        else return matcher.find();
+        boolean lol = matcher.find();
+        if (v) return !lol;
+        else return lol;
     }
 
     private boolean stringMatches(String word, String line, boolean v, boolean i) {

@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Tests {
 
     ByteArrayOutputStream bos;
+
     @BeforeEach
     public void initBos() {
         bos = new ByteArrayOutputStream();
@@ -21,7 +22,7 @@ public class Tests {
         Grep grep = new Grep(false, false, false, "GoodBye", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "текст текст GoodBye\nGoodBye\n";
+        String expected = "текст текст GoodBye\nGoodBye";
         assertEquals(expected, actual);
     }
 
@@ -30,7 +31,7 @@ public class Tests {
         Grep grep = new Grep(true, false, false, "GoodBye", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "тест текст\nGoodBee текст\nтекст текст GOODBYE\nтекст текст goodbye\n2345678\n";
+        String expected = "тест текст\nGoodBee текст\nтекст текст GOODBYE\nтекст текст goodbye\n2345678";
         assertEquals(expected, actual);
     }
 
@@ -39,7 +40,7 @@ public class Tests {
         Grep grep = new Grep(false, true, false, "GoodBye", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "текст текст GOODBYE\nтекст текст goodbye\nтекст текст GoodBye\nGoodBye\n";
+        String expected = "текст текст GOODBYE\nтекст текст goodbye\nтекст текст GoodBye\nGoodBye";
         assertEquals(expected, actual);
     }
 
@@ -48,7 +49,7 @@ public class Tests {
         Grep grep = new Grep(true, true, false, "GoodBye", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "тест текст\nGoodBee текст\n2345678\n";
+        String expected = "тест текст\nGoodBee текст\n2345678";
         assertEquals(expected, actual);
     }
 
@@ -57,7 +58,16 @@ public class Tests {
         Grep grep = new Grep(false, false, false, "hello", "emptyLinesTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "hello\nhello\n";
+        String expected = "hello\nhello";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void emptyFileTest() { //grep hello emptyFileTest.txt
+        Grep grep = new Grep(false, false, false, "hello", "emptyFileTest.txt");
+        grep.textFilter(bos);
+        String actual = bos.toString(StandardCharsets.UTF_8);
+        String expected = "";
         assertEquals(expected, actual);
     }
 
@@ -66,26 +76,25 @@ public class Tests {
         Grep grep = new Grep(true, false, false, "hello", "emptyLinesTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "\n\n\nhel\n\n\n\n\n\n";
+        String expected = "\n\n\n\n\n\n\nhel\n\n";
         assertEquals(expected, actual);
     }
 
-    /*
-        @Test
-        public void findEmptyLinesTest() { //grep hello emptyLinesTest.txt
-            Grep grep = new Grep(false, false, false, "", "emptyLinesTest.txt");
-            grep.textFilter();
-            String actual = bos.toString(StandardCharsets.UTF_8);
-            String expected = "";
-            assertEquals(expected, actual);
-        }
-    */
+    @Test
+    public void findEmptyLinesTest() { //grep hello emptyLinesTest.txt
+        Grep grep = new Grep(false, false, true, "^\\s*$", "emptyLinesTest.txt");
+        grep.textFilter(bos);
+        String actual = bos.toString(StandardCharsets.UTF_8);
+        String expected = "\n\n\n\n\n\n\n\n";
+        assertEquals(expected, actual);
+    }
+
     @Test
     public void r_Test() { //grep -r [a-z] simpleTest.txt
         Grep grep = new Grep(false, false, true, "[a-z]", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "GoodBee текст\nтекст текст goodbye\nтекст текст GoodBye\nGoodBye\n";
+        String expected = "GoodBee текст\nтекст текст goodbye\nтекст текст GoodBye\nGoodBye";
         assertEquals(expected, actual);
     }
 
@@ -94,7 +103,7 @@ public class Tests {
         Grep grep = new Grep(true, false, true, "[a-z]", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "тест текст\nтекст текст GOODBYE\n2345678\n";
+        String expected = "тест текст\nтекст текст GOODBYE\n2345678";
         assertEquals(expected, actual);
     }
 
@@ -103,7 +112,7 @@ public class Tests {
         Grep grep = new Grep(false, true, true, "[a-z]", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "GoodBee текст\nтекст текст GOODBYE\nтекст текст goodbye\nтекст текст GoodBye\nGoodBye\n";
+        String expected = "GoodBee текст\nтекст текст GOODBYE\nтекст текст goodbye\nтекст текст GoodBye\nGoodBye";
         assertEquals(expected, actual);
     }
 
@@ -112,7 +121,7 @@ public class Tests {
         Grep grep = new Grep(true, true, true, "[a-z]", "simpleTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "тест текст\n2345678\n";
+        String expected = "тест текст\n2345678";
         assertEquals(expected, actual);
     }
 
@@ -121,7 +130,7 @@ public class Tests {
         Grep grep = new Grep(false, false, false, "[aob]", "stringOrPatternTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "[aob]\n[aob] 23\n";
+        String expected = "[aob]\n[aob] 23";
         assertEquals(expected, actual);
     }
 
@@ -130,7 +139,7 @@ public class Tests {
         Grep grep = new Grep(false, true, false, "[aob]", "stringOrPatternTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "[aob]\n[aob] 23\n[AOB]\n";
+        String expected = "[aob]\n[aob] 23\n[AOB]";
         assertEquals(expected, actual);
     }
 
@@ -139,7 +148,7 @@ public class Tests {
         Grep grep = new Grep(false, false, true, "[aob]", "stringOrPatternTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "[aob]\naboobaboabaobao\n[aob] 23\n";
+        String expected = "[aob]\naboobaboabaobao\n[aob] 23";
         assertEquals(expected, actual);
     }
 
@@ -148,7 +157,7 @@ public class Tests {
         Grep grep = new Grep(false, true, true, "[aob]", "stringOrPatternTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "[aob]\naboobaboabaobao\n[aob] 23\n[AOB]\n";
+        String expected = "[aob]\naboobaboabaobao\n[aob] 23\n[AOB]";
         assertEquals(expected, actual);
     }
 
@@ -157,7 +166,7 @@ public class Tests {
         Grep grep = new Grep(true, true, true, "[aob]", "stringOrPatternTest.txt");
         grep.textFilter(bos);
         String actual = bos.toString(StandardCharsets.UTF_8);
-        String expected = "rtrtrtrtrttr\n";
+        String expected = "rtrtrtrtrttr";
         assertEquals(expected, actual);
     }
 }
