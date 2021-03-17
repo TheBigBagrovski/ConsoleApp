@@ -10,7 +10,7 @@ public class Grep {
     private final boolean r;
     private final boolean i;
     private final boolean v;
-    private final String word;
+    private String word;
     private final String fileName;
 
     public Grep(boolean v, boolean i, boolean r, String word, String fileName) {
@@ -23,23 +23,18 @@ public class Grep {
 
     public void textFilter(OutputStream outputStream) {
         Pattern pattern = null;
+        boolean firstTime = true;
         if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
         else if (r) pattern = Pattern.compile(word);
+        if (i) word = word.toLowerCase();
         File file = new File(fileName);
         try {
             FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(fr);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             String line = reader.readLine();
-            boolean firstTime = true;
             while (line != null) {
-                if (r) {
-                    if (regexMatches(pattern, line, v)) {
-                        if (!firstTime) outputStreamWriter.write("\n");
-                        else firstTime = false;
-                        outputStreamWriter.write(line);
-                    }
-                } else if (stringMatches(word, line, v, i)) {
+                if (r && regexMatches(pattern, line) || !r && stringMatches(word, line)) {
                     if (!firstTime) outputStreamWriter.write("\n");
                     else firstTime = false;
                     outputStreamWriter.write(line);
@@ -52,18 +47,15 @@ public class Grep {
         }
     }
 
-    private boolean regexMatches(Pattern pattern, String line, boolean v) {
+    private boolean regexMatches(Pattern pattern, String line) {
         Matcher matcher = pattern.matcher(line);
         boolean lol = matcher.find();
         if (v) return !lol;
         else return lol;
     }
 
-    private boolean stringMatches(String word, String line, boolean v, boolean i) {
-        if (i) {
-            word = word.toLowerCase();
-            line = line.toLowerCase();
-        }
+    private boolean stringMatches(String word, String line) {
+        if (i) line = line.toLowerCase();
         if (v) return !line.contains(word);
         else return line.contains(word);
     }
