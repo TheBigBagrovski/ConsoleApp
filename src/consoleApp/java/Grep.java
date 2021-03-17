@@ -26,7 +26,7 @@ public class Grep {
         boolean firstTime = true;
         if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
         else if (r) pattern = Pattern.compile(word);
-        if (i) word = word.toLowerCase();
+        else if (i) word = word.toLowerCase();
         File file = new File(fileName);
         try {
             FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
