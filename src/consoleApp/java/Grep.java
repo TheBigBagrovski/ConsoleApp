@@ -10,23 +10,23 @@ public class Grep {
     private final boolean r;
     private final boolean i;
     private final boolean v;
-    private String word;
+    private final String word;
     private final String fileName;
+    private Pattern pattern = null;
 
     public Grep(boolean v, boolean i, boolean r, String word, String fileName) {
         this.v = v;
         this.i = i;
         this.r = r;
-        this.word = word;
+        if (!i) this.word = word;
+        else this.word = word.toLowerCase();
         this.fileName = fileName;
+        if (this.r && this.i) this.pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
+        else if (this.r) this.pattern = Pattern.compile(word);
     }
 
     public void textFilter(OutputStream outputStream) {
-        Pattern pattern = null;
         boolean firstTime = true;
-        if (r && i) pattern = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
-        else if (r) pattern = Pattern.compile(word);
-        else if (i) word = word.toLowerCase();
         File file = new File(fileName);
         try {
             FileReader fr = new FileReader(file, StandardCharsets.UTF_8);
