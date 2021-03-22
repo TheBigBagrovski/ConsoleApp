@@ -54,9 +54,9 @@ public class Grep {
 
     private boolean regexMatches(String line) {
         Matcher matcher = pattern.matcher(line);
-        boolean lol = matcher.find();
-        if (v) return !lol;
-        else return lol;
+        boolean matchesOrNot = matcher.find();
+        if (v) return !matchesOrNot;
+        else return matchesOrNot;
     }
 
     private boolean stringMatches(String line) {

@@ -32,6 +32,7 @@ public final class GrepLauncher {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
+            return;
         }
         Grep grep = new Grep(v, i, r, word, fileName);
         grep.textFilter(System.out);
